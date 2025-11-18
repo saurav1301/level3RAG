@@ -4,7 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.tools import tool
 from langchain_core.output_parsers import StrOutputParser
 
-from app.tools import RetrieverTool, calc_tool, summarizer_tool
+from app.tools import RetrieverTool, calc_tool, summarizer_tool , WebSearchTool
 
 # --------------------------------------------------
 # GROQ LLM
@@ -26,12 +26,18 @@ def build_groq_llm():
 def build_tools(retriever):
 
     retr = RetrieverTool(retriever)
+    tavily = WebSearchTool(os.environ.get("TAVILY_API_KEY"))
 
     @tool
     def search_docs(query: str) -> str:
         """Retrieve relevant medical documents."""
         docs = retr.run(query)
         return "\n\n".join([d.page_content for d in docs])
+    
+    @tool
+    def web_search(query: str) -> str:
+        """Search the real-time web for fresh info."""
+        return tavily.run(query)
 
     @tool
     def calculator(expr: str) -> str:
@@ -43,7 +49,7 @@ def build_tools(retriever):
         """Summarize long text."""
         return summarizer_tool([text])
 
-    return [search_docs, calculator, summarizer]
+    return [search_docs, calculator, summarizer, web_search]
 
 # --------------------------------------------------
 # Very Simple Agent using LCEL
@@ -60,7 +66,8 @@ class SimpleAgent:
         "You are an Agentic RAG system.\n"
         "If you need outside info, respond ONLY with:\n"
         "{{ \"action\": \"tool_name\", \"input\": \"value\" }}\n"
-        "Else answer normally.\n"
+        "Available tools: search_docs, web_search, calculator, summarizer.\n"
+        "Prefer search_docs for local knowledge and web_search for real-time info.\n"
     ),
     ("human", "{input}")
 ])
