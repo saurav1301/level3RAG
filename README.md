@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ✨ Features (What makes this Level-3 RAG?)
 🧩 1. Multi-Query Retrieval
 
@@ -235,3 +236,6 @@ MIT License.
 ⭐ If you like this project…
 
 Leave a ⭐ on the repo and connect on LinkedIn.
+=======
+# level3RAG
+>>>>>>> 6106c705339d1def4dad91c189bfb049839a080e
