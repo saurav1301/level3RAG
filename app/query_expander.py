@@ -11,9 +11,6 @@ TEMPLATES = [
     "{q} research summary",
 ]
 
-
-
-
 def expand_query(query: str) -> List[str]:
     query = query.strip()
     out = []
